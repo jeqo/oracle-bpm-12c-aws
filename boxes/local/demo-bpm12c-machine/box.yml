@@ -1,0 +1,13 @@
+box:
+  name: demo-bpm12c-machine
+  # url: https://storage.us2.oraclecloud.com/v1/istoilis-istoilis/vagrant/oel65-64.box
+  url: C:/boxes/oel65-64.box
+  data_directory: C:/data/jeqo
+  ip: 192.168.56.50
+  disk_location: ./disk_1.vdi
+  additional_disk_size: 40
+  ram: 3096
+  cpus: 2
+  additional_swap: 6100
+chef_repo:
+  location: C://dev/jeqo/chef-repo

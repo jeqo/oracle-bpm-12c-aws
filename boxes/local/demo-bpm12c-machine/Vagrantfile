@@ -1,0 +1,63 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+require "yaml"
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+	box_props = YAML.load_file("box.yml")
+	disk_location = box_props['box']['disk_location']
+
+	config.vm.box = box_props['box']['name']
+	config.vm.box_url = box_props['box']['url']
+	config.vm.hostname = box_props['box']['name']
+	config.vm.synced_folder box_props['box']['data_directory'] , "/data", :mount_options => ["dmode=777", "fmode=777"]
+	config.vm.network :private_network, ip: box_props['box']['ip']
+
+	config.vm.provider :virtualbox do |vb|
+		vb.customize ["modifyvm", :id, "--memory", box_props['box']['ram']]
+		vb.customize ["modifyvm", :id, "--name"  , box_props['box']['name']]
+		vb.customize ["modifyvm", :id, "--cpus"  , box_props['box']['cpus']]
+		vb.customize ["modifyvm", :id, "--chipset", "ich9"]
+
+		if ARGV[0] == "up" && ! File.exist?(disk_location)
+			vb.customize [
+				'createhd',
+				'--filename', disk_location,
+				'--format', 'VDI',
+				'--size', box_props['box']['additional_disk_size'] * 1024
+			]
+			vb.customize [
+				'storageattach', :id,
+				'--storagectl', 'SATA Controller',
+				'--port', 1, '--device', 0,
+				'--type', 'hdd', '--medium',
+				disk_location
+			]
+		end
+	end
+
+	if ARGV[0] == "up" && ! File.exist?(disk_location)
+		config.vm.provision "shell", path: "bootstrap.sh"
+		config.vm.provision "shell" do |s|
+			s.path = "increase_swap.sh"
+			s.args   = "'#{box_props['box']['additional_swap']}'"
+		end
+	end
+
+	config.vm.provision "chef_solo" do |chef|
+		chef.cookbooks_path = "#{box_props['chef_repo']['location']}/cookbooks"
+		chef.roles_path = "#{box_props['chef_repo']['location']}/roles"
+		chef.json =  {
+			"nfs-client" => {
+				"server-host" => "192.168.56.5",
+				"remote-directory" => "/data"
+			},
+			"oracle-xe" => {
+				"url" => "file:///data/oracle_db/xe-11g/oracle-xe-11.2.0-1.0.x86_64.rpm"
+			}
+		}
+		chef.add_role "nfs-client"
+		chef.add_role "oracle_db-xe"
+	end
+end
