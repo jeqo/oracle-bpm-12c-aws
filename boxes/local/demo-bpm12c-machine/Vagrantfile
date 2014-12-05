@@ -50,9 +50,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		chef.roles_path = "#{box_props['chef_repo']['location']}/roles"
 		chef.json =  {
 			"oracle-xe" => {
-				"url" => "file:///data/oracle_db/xe-11g/oracle-xe-11.2.0-1.0.x86_64.rpm"
+				"url" => "file:///data/oracle-xe/oracle-xe-11.2.0-1.0.x86_64.rpm"
 			}
 		}
 		chef.add_role "oracle_db-xe"
+		chef.add_recipe "oracle-fmw::install-bpm_qs-12c"
 	end
 end
