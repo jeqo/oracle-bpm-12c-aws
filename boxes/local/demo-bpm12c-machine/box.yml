@@ -10,4 +10,4 @@ box:
   cpus: 2
   additional_swap: 6100
 chef_repo:
-  location: C://dev/jeqo/chef-repo
+  location: C:/dev/jeqo/chef-repo

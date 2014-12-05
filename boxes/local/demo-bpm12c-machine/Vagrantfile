@@ -49,15 +49,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		chef.cookbooks_path = "#{box_props['chef_repo']['location']}/cookbooks"
 		chef.roles_path = "#{box_props['chef_repo']['location']}/roles"
 		chef.json =  {
-			"nfs-client" => {
-				"server-host" => "192.168.56.5",
-				"remote-directory" => "/data"
-			},
 			"oracle-xe" => {
 				"url" => "file:///data/oracle_db/xe-11g/oracle-xe-11.2.0-1.0.x86_64.rpm"
 			}
 		}
-		chef.add_role "nfs-client"
 		chef.add_role "oracle_db-xe"
 	end
 end
