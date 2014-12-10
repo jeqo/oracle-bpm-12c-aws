@@ -54,6 +54,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 			}
 		}
 		chef.add_role "oracle_db-xe"
-		chef.add_recipe "oracle-fmw::install-bpm_qs-12c"
+		chef.add_role "demo-bpm-12c"
 	end
 end

@@ -34,3 +34,4 @@ build/
 .rvmrc
 boxes/local/**/disk_1.vdi
 boxes/local/**/.vagrant/**
+**/aws.properties
