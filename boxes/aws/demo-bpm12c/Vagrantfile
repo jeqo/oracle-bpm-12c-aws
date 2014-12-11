@@ -5,12 +5,15 @@ require "yaml"
 VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+	# Load properties files
 	box_props = YAML.load_file("box.properties")
 	aws_props = YAML.load_file("aws.properties")
 
+	# Basic metadata
 	config.vm.box = "#{box_props['box']['name']}"
 	config.vm.box_url = "file://#{box_props['box']['base_location']}"
 
+	# AWS Configuration
 	config.vm.provider :aws do |aws, override|
 		aws.access_key_id = "#{aws_props['keys']['access_key_id']}"
 		aws.secret_access_key = "#{aws_props['keys']['secret_access_key']}"
@@ -20,7 +23,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		aws.region = "sa-east-1"
 		aws.availability_zone = "sa-east-1a"
 		aws.ami = "ami-0511a418"
-		#aws.elastic_ip = "54.94.207.207"
 
 		override.ssh.username = "ec2-user"
 		override.ssh.private_key_path = "#{aws_props['keys']['key_pair_location']}"
@@ -39,13 +41,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		config.ssh.pty = true
 	end
 
+	# Install Chef Client
 	config.omnibus.chef_version = :latest
 
+	# Increase Swap size
 	config.vm.provision "shell" do |s|
 		s.path	= "increase_swap.sh"
 		s.args   = "'#{box_props['box']['additional_swap']}'"
 	end
 
+	# Run Provisioning with Chef
 	config.vm.provision "chef_client" do |chef|
 		chef.chef_server_url = "https://api.opscode.com/organizations/jeqo"
 		chef.validation_client_name = "jeqo-validator"
