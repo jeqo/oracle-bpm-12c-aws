@@ -57,7 +57,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 		chef.validation_key_path = "#{box_props['chef']['repo_location']}/.chef/jeqo-validator.pem"
 		chef.node_name = "#{box_props['box']['name']}"
 		chef.add_role "nfs-client"
-		chef.add_role "oracle_db-xe"
+		# Chef this repository to install oracle-xe: https://supermarket.chef.io/cookbooks/oracle-xe
+		chef.add_role "oracle-xe"
 		chef.add_role "demo-bpm_bam-12c"
 		chef.json = {
 			"nfs-client" => {
