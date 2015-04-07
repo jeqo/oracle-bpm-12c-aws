@@ -53,7 +53,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 				"url" => "file:///data/oracle-xe/oracle-xe-11.2.0-1.0.x86_64.rpm"
 			}
 		}
-		chef.add_role "oracle_db-xe"
+		# Chef this repository to install oracle-xe: https://supermarket.chef.io/cookbooks/oracle-xe
+		chef.add_role "oracle-xe"
 		chef.add_role "demo-bpm-12c"
 	end
 end
